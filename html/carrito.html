@@ -3,10 +3,45 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
-    <link rel="stylesheet" href="./styles/carrito.css">
+    <title>Catalogo de Productos - Carrito</title>
+    <link rel="stylesheet" href="../styles/carrito.css">
 </head>
 <body>
-    <h1>Carrito</h1>
+    <header class="header">
+        <div class="logo">
+            <a href="../index.html"><img src="../src/Logo.png" alt="logo"></a>
+        </div>
+        <nav>
+            <nav class="nav">
+                <div class="acciones">
+                    <li><a href="../html/carrito.html"><img src="../src/carrito-de-compras.png" alt="Carrito"></a></li>
+                    <div class="menu">
+                        <button type="button" class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false">Menú ▾</button>
+                        <div class="menu-lista" id="menuLista">
+                            <a href="../html/cuenta.html">Mi cuenta</a>
+                            <a href="../html/acerca.html">Acerca de</a>
+                            <button type="button" class="salir" id="cerrarSesion">Cerrar sesión</button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </nav>
+    </header>
+
+      <main>
+    <section class="panel" id="lista"></section>
+ 
+    <aside class="panel resumen">
+      <h2>Resumen de compra</h2>
+      <div class="fila"><span>Subtotal</span><span id="subtotal">$0,00</span></div>
+      <div class="fila desc"><span>Descuentos</span><span id="descuentos">-$0,00</span></div>
+      <div class="fila total"><span>Total</span><span id="total">$0,00</span></div>
+      <button type="button" class="btn-pagar" id="btnPagar">Ir a pagar</button>
+      <button type="button" class="btn-vaciar" id="btnVaciar">Vaciar carrito</button>
+    </aside>
+  </main>
+
+
+    <script src="../js/carrito.js"></script>
 </body>
 </html>

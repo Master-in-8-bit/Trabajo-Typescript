@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogo de Productos - Pago</title>
+    <link rel="stylesheet" href="../styles/pago.css">
+</head>
+<body>
+      <main>
+    
+ 
+    <!-- Formulario de pago -->
+    <section class="panel" id="seccionPago">
+      <h2>Datos de la tarjeta</h2>
+      <form id="formPago" novalidate>
+        <div class="field">
+          <label for="titular">Nombre del titular</label>
+          <input type="text" id="titular" autocomplete="off" placeholder="Como figura en la tarjeta">
+          <p class="error" id="errTitular"></p>
+        </div>
+        <div class="field">
+          <label for="numero">Número de tarjeta</label>
+          <input type="text" id="numero" inputmode="numeric" autocomplete="off" placeholder="0000 0000 0000 0000" maxlength="19">
+          <p class="error" id="errNumero"></p>
+        </div>
+        <div class="dos">
+          <div class="field">
+            <label for="venc">Vencimiento</label>
+            <input type="text" id="venc" inputmode="numeric" autocomplete="off" placeholder="MM/AA" maxlength="5">
+            <p class="error" id="errVenc"></p>
+          </div>
+          <div class="field">
+            <label for="cvv">Código (CVV)</label>
+            <input type="password" id="cvv" inputmode="numeric" autocomplete="off" placeholder="123" maxlength="4">
+            <p class="error" id="errCvv"></p>
+          </div>
+        </div>
+        <button type="submit" class="btn-pagar" id="btnConfirmar">Pagar</button>
+      </form>
+    </section>
+ 
+    <!-- Resumen -->
+    <aside class="panel" id="seccionResumen">
+      <h2>Tu pedido</h2>
+      <div id="items"></div>
+      <div class="sep"></div>
+      <div class="fila"><span>Subtotal</span><span id="subtotal">$0,00</span></div>
+      <div class="fila desc"><span>Descuentos</span><span id="descuentos">-$0,00</span></div>
+      <div class="fila total"><span>Total</span><span id="total">$0,00</span></div>
+    </aside>
+ 
+    <!-- Pantalla de éxito -->
+    <section class="panel exito" id="exito" hidden style="grid-column: 1 / -1;">
+      <div class="check">✓</div>
+      <h2>¡Pago realizado con éxito!</h2>
+      <p id="textoPedido"></p>
+      <p id="textoTotal"></p>
+      <p>Gracias por tu compra.</p>
+      <a class="btn-volver" href="../index.html">Volver al inicio</a>
+    </section>
+  </main>
+
+
+
+  <script src="../js/pago.js"></script>
+</body>
+</html>

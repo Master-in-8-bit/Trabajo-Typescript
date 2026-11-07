@@ -48,46 +48,34 @@ const form = document.getElementById('loginForm');
   }
 
   form.addEventListener('submit', async (e) => {
-    e.preventDefault();
-    mensaje.className = '';
-    mensaje.textContent = '';
-    if (!validar()) return;
+  e.preventDefault();
+  mensaje.className = '';
+  mensaje.textContent = '';
+  if (!validar()) return;
 
-    btn.disabled = true;
-    btn.textContent = 'Verificando...';
+  btn.disabled = true;
+  btn.textContent = 'Verificando...';
+  await new Promise(r => setTimeout(r, 900));
 
-    // Acá iría tu llamada real al servidor, por ejemplo:
-    // const res = await fetch('/api/login', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify({ email: email.value.trim(), password: password.value })
-    // });
-    await new Promise(r => setTimeout(r, 900)); // simulación
+  // Leer el usuario que guardó el registro
+  let usuario = null;
+  try { usuario = JSON.parse(localStorage.getItem('usuario')); } catch (err) {}
 
-    // Credenciales de prueba
-    if (email.value.trim() === 'demo@correo.com' && password.value === '123456') {
-      mensaje.className = 'ok';
-      mensaje.textContent = '¡Sesión iniciada correctamente!';
-    } else {
-      mensaje.className = 'fail';
-      mensaje.textContent = 'Correo o contraseña incorrectos.';
-    }
-
-    if (email.value.trim() === 'demo@correo.com' && password.value === '123456') {
-  mensaje.className = 'ok';
-  mensaje.textContent = '¡Sesión iniciada! Redirigiendo...';
-
-  // Espera un momento para que se vea el mensaje y redirige
-  setTimeout(() => {
-    window.location.href = '../index.html'; // Cambia esto a la página de inicio real
-  }, 800);
-} else {
-  mensaje.className = 'fail';
-  mensaje.textContent = 'Correo o contraseña incorrectos.';
-  btn.disabled = false;
-  btn.textContent = 'Entrar';
-}
-  });
+  if (usuario &&
+      usuario.email === email.value.trim().toLowerCase() &&
+      usuario.password === password.value) {
+    mensaje.className = 'ok';
+    mensaje.textContent = '¡Sesión iniciada! Redirigiendo...';
+    setTimeout(() => {
+      window.location.href = '../index.html';   // poné la ruta de tu inicio
+    }, 800);
+  } else {
+    mensaje.className = 'fail';
+    mensaje.textContent = 'Correo o contraseña incorrectos.';
+    btn.disabled = false;
+    btn.textContent = 'Entrar';
+  }
+});
 
   // Limpiar el error al escribir
   email.addEventListener('input', () => { emailError.textContent = ''; email.classList.remove('invalid'); });

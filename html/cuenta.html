@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogo de Productos - Cuenta</title>
+    <link rel="stylesheet" href="../styles/cuenta.css">
+</head>
+<body>
+
+    <header class="header">
+        <div class="logo">
+            <a href="../index.html"><img src="../src/Logo.png" alt="logo"></a>
+        </div>
+        <nav>
+            <nav class="nav">
+                <div class="acciones">
+                    <li><a href="../html/carrito.html"><img src="../src/carrito-de-compras.png" alt="Carrito"></a></li>
+                    <div class="menu">
+                        <button type="button" class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false">Menú ▾</button>
+                        <div class="menu-lista" id="menuLista">
+                            <a href="../html/cuenta.html">Mi cuenta</a>
+                            <a href="../html/acerca.html">Acerca de</a>
+                            <button type="button" class="salir" id="cerrarSesion">Cerrar sesión</button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </nav>
+    </header>
+
+     <main>
+    <!-- Se muestra por defecto. El JS lo oculta si encuentra tus datos. -->
+    <section class="panel" id="sinDatos">
+      <div class="aviso">
+        <p>No encontramos los datos de tu cuenta.</p>
+        <p><a href="registro.html">Registrate</a> o <a href="login.html">iniciá sesión</a>.</p>
+      </div>
+    </section>
+ 
+    <!-- Se muestra solo si hay datos guardados. -->
+    <section id="conDatos" hidden>
+      <h2 class="saludo" id="saludo">Hola</h2>
+      <p class="sub">Esta es la información de tu cuenta.</p>
+ 
+      <div class="panel">
+        <h2>Información personal</h2>
+        <div class="dato">
+          <span class="etiqueta">Nombre completo</span>
+          <span class="valor" id="nombreCompleto"></span>
+        </div>
+        <div class="dato">
+          <span class="etiqueta">Correo electrónico</span>
+          <span class="valor" id="correo"></span>
+        </div>
+        <div class="dato">
+          <span class="etiqueta">Contraseña</span>
+          <span class="valor">
+            <span id="clave"></span>
+            <button type="button" class="ver" id="btnVer">Mostrar</button>
+          </span>
+        </div>
+      </div>
+    </section>
+  </main>
+
+
+
+    <script src="../js/cuenta.js" defer></script>
+</body>
+</html>

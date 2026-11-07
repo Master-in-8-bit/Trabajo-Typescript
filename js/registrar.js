@@ -84,7 +84,12 @@ const form = document.getElementById('registroForm');
     //   headers: { 'Content-Type': 'application/json' },
     //   body: JSON.stringify(datos)
     // });
-    await new Promise(r => setTimeout(r, 900)); // simulación
+    localStorage.setItem("usuario", JSON.stringify({
+      nombre: datos.nombre,
+      apellido: datos.apellido,
+      email: datos.email.toLowerCase(),
+      password: datos.password
+    })); // simulación
 
     mensaje.className = 'ok';
     mensaje.textContent = '¡Cuenta creada! Redirigiendo al inicio de sesión...';
