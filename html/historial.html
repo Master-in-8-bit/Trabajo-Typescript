@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Catalogo de Productos - Historial</title>
+    <link rel="stylesheet" href="../styles/historial.css">
+</head>
+<body>
+    <header class="header">
+        <div class="logo">
+            <a href="../index.html"><img src="../src/Logo.png" alt="logo"></a>
+        </div>
+        <nav>
+            <nav class="nav">
+                <div class="acciones">
+                    <li><a href="../html/carrito.html"><img src="../src/carrito-de-compras.png" alt="Carrito"></a></li>
+                    <div class="menu">
+                        <button type="button" class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false">Menú ▾</button>
+                        <div class="menu-lista" id="menuLista">
+                            <a href="../html/cuenta.html">Mi cuenta</a>
+                            <a href="../html/historial.html">Historial</a>
+                            <a href="../html/acerca.html">Acerca de</a>
+                            <button type="button" class="salir" id="cerrarSesion">Cerrar sesión</button>
+                        </div>
+                    </div>
+                </div>
+            </nav>
+        </nav>
+    </header>
+
+    <main>
+    <!-- Lista de todas las ventas -->
+    <section id="vistaLista"></section>
+ 
+    <!-- Detalle de una venta -->
+    <section id="vistaDetalle" hidden>
+      <button type="button" class="btn-volver" id="btnVolver">← Volver al historial</button>
+      <div class="panel detalle" id="detalle"></div>
+    </section>
+  </main>
+
+
+    <script src="../js/historial.js"></script>
+</body>
+</html>

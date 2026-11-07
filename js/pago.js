@@ -1,3 +1,5 @@
+
+  
   const fmt = n => "$" + n.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
   const precioFinal = p => p.regular * (1 - p.dto / 100);
  
@@ -105,8 +107,24 @@
       await new Promise(r => setTimeout(r, 1800));   // simulación
  
       // Pago "aprobado": se vacía el carrito y se muestra la confirmación
-      const nroPedido = "#" + Math.floor(100000 + Math.random() * 900000);
-      try { localStorage.removeItem("carrito"); } catch (err) {}
+      // Guardar la compra en el historial (la más nueva primero)
+let historial = [];
+try { historial = JSON.parse(localStorage.getItem("historial")) || []; } catch (err) {}
+const nroPedido = "#" + String(historial.length + 1).padStart(4, "0");
+historial.unshift({
+  nro: nroPedido,
+  fecha: new Date().toISOString(),
+  items: items.map(p => ({
+    nombre: p.nombre, cantidad: p.cantidad, regular: p.regular,
+    dto: p.dto, img: p.img || "", emoji: p.emoji || ""
+  })),
+  subtotal: subtotal,
+  descuentos: descuentos,
+  total: total
+});
+try { localStorage.setItem("historial", JSON.stringify(historial)); } catch (err) {}
+
+try { localStorage.removeItem("carrito"); } catch (err) {}
  
       document.getElementById("textoPedido").textContent = "Número de pedido: " + nroPedido;
       document.getElementById("textoTotal").textContent = "Total pagado: " + fmt(total);
