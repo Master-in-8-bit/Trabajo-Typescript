@@ -1,5 +1,6 @@
   
   
+  /* Colores y distribución del formulario y resumen del pago. */
   :root {
     --bg: #f4f4f6;
     --card: #fff;
@@ -12,6 +13,7 @@
     --line: #d9d9de;
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body {
     margin: 0;
     background: var(--bg);
@@ -29,6 +31,47 @@
   header h1 { margin: 0; font-size: 1.4rem; }
   header a { color: #fff; font-weight: 600; text-decoration: none; }
   header a:hover { text-decoration: underline; }
+  .logo-pago img { display: block; height: 54px; width: auto; }
+  .menu-pago { position: relative; }
+  .menu-btn-pago {
+    padding: 8px 14px;
+    background: var(--card);
+    border: 1.5px solid var(--line);
+    border-radius: 8px;
+    color: var(--text);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+  }
+  .menu-lista-pago {
+    display: none;
+    position: absolute;
+    z-index: 5;
+    top: calc(100% + 6px);
+    right: 0;
+    min-width: 180px;
+    padding: 6px;
+    background: var(--card);
+    border: 1px solid var(--red-dark);
+    border-radius: 10px;
+    box-shadow: 0 6px 18px rgba(0,0,0,.15);
+  }
+  .menu-lista-pago.abierto { display: block; }
+  .menu-lista-pago a, .menu-lista-pago button {
+    display: block;
+    width: 100%;
+    padding: 10px 12px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--text);
+    text-align: left;
+    text-decoration: none;
+    font: inherit;
+    cursor: pointer;
+  }
+  .menu-lista-pago a:hover, .menu-lista-pago button:hover { background: #ff7c39; }
+  .menu-lista-pago button { color: var(--red); font-weight: 600; }
   main {
     max-width: 960px;
     margin: 0 auto;
@@ -103,4 +146,3 @@
   .exito .btn-volver:hover { background: var(--red-dark); }
   .vacio { text-align: center; color: var(--muted); padding: 20px 0; }
   .vacio a { color: var(--red); font-weight: 600; }
-  [hidden] { display: none !important; }

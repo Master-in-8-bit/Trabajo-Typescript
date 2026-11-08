@@ -1,3 +1,4 @@
+/* Colores y estilos del formulario de registro. */
 :root {
     --bg: #eef2f7;
     --card: #ffffff;
@@ -80,6 +81,6 @@
   #mensaje { margin: 16px 0 0; text-align: center; font-size: .95rem; min-height: 1.2em;}
   #mensaje.ok { color: var(--ok); }
   #mensaje.fail { color: var(--error); }
-  .registro { margin: 8px 0 0; text-align: center; font-size: .95rem; color: var(--muted); margin-top: -14px; }
+  .registro { margin: 8px 0 0; text-align: center; font-size: .95rem; color: var(--muted); }
   .registro a { color: var(--accent); font-weight: 600; text-decoration: none; }
   .registro a:hover { text-decoration: underline; }

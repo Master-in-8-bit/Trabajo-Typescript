@@ -1,3 +1,4 @@
+// Conecta los campos del formulario con sus mensajes de error.
 const form = document.getElementById('registroForm');
   const campos = {
     nombre: document.getElementById('nombre'),
@@ -14,19 +15,36 @@ const form = document.getElementById('registroForm');
   const mensaje = document.getElementById('mensaje');
   const btn = document.getElementById('btn');
   const toggle = document.getElementById('toggle');
+  const USUARIOS_KEY = 'usuarios';
 
-  // Mostrar / ocultar contraseña
+  // Lee todas las cuentas guardadas. Si solo existe el formato anterior,
+  // lo convierte en una lista para mantener compatibilidad.
+  function cargarUsuarios() {
+    const guardados = localStorage.getItem(USUARIOS_KEY);
+    if (guardados !== null) {
+      const usuarios = JSON.parse(guardados);
+      if (!Array.isArray(usuarios)) throw new Error('La lista de usuarios guardada no es válida.');
+      return usuarios;
+    }
+
+    const usuarioAnterior = localStorage.getItem('usuario');
+    return usuarioAnterior ? [JSON.parse(usuarioAnterior)] : [];
+  }
+
+  // Permite alternar entre contraseña oculta y visible.
   toggle.addEventListener('click', () => {
     const oculto = campos.password.type === 'password';
     campos.password.type = oculto ? 'text' : 'password';
     toggle.textContent = oculto ? 'Ocultar' : 'Mostrar';
   });
 
+  // Muestra un mensaje de error y resalta visualmente el campo indicado.
   function setError(campo, texto) {
     errores[campo].textContent = texto;
     campos[campo].classList.add('invalid');
   }
 
+  // Revisa que nombre, apellido, correo y contraseña tengan valores válidos.
   function validar() {
     let ok = true;
     for (const c in campos) {
@@ -71,32 +89,43 @@ const form = document.getElementById('registroForm');
     btn.disabled = true;
     btn.textContent = 'Creando cuenta...';
 
+    // Preparamos la cuenta; el correo se guarda en minúsculas para comparar
+    // de forma consistente aunque se escriba con mayúsculas.
     const datos = {
       nombre: campos.nombre.value.trim(),
       apellido: campos.apellido.value.trim(),
-      email: campos.email.value.trim(),
+      email: campos.email.value.trim().toLowerCase(),
       password: campos.password.value
     };
 
-    // Acá iría tu llamada real al servidor, por ejemplo:
-    // const res = await fetch('/api/registro', {
-    //   method: 'POST',
-    //   headers: { 'Content-Type': 'application/json' },
-    //   body: JSON.stringify(datos)
-    // });
-    localStorage.setItem("usuario", JSON.stringify({
-      nombre: datos.nombre,
-      apellido: datos.apellido,
-      email: datos.email.toLowerCase(),
-      password: datos.password
-    })); // simulación
+    try {
+      const usuarios = cargarUsuarios();
+      // No permitimos registrar dos cuentas con el mismo correo.
+      if (usuarios.some(usuario => usuario.email.toLowerCase() === datos.email)) {
+        setError('email', 'Ya existe una cuenta con ese correo.');
+        btn.disabled = false;
+        btn.textContent = 'Crear cuenta';
+        return;
+      }
+      // Agregamos la nueva cuenta a la lista y la guardamos como texto JSON.
+      usuarios.push(datos);
+      localStorage.setItem(USUARIOS_KEY, JSON.stringify(usuarios));
+    } catch (error) {
+      console.error('No se pudo guardar la cuenta.', error);
+      mensaje.className = 'fail';
+      mensaje.textContent = 'No se pudo guardar la cuenta en este navegador.';
+      btn.disabled = false;
+      btn.textContent = 'Crear cuenta';
+      return;
+    }
 
     mensaje.className = 'ok';
     mensaje.textContent = '¡Cuenta creada! Redirigiendo al inicio de sesión...';
+    // Damos tiempo para que se vea el mensaje antes de ir al login.
     setTimeout(() => { window.location.href = 'login.html'; }, 1000);
   });
 
-  // Limpiar el error al escribir
+  // Mientras se corrige un campo, quitamos su mensaje de error.
   for (const c in campos) {
     campos[c].addEventListener('input', () => {
       errores[c].textContent = '';

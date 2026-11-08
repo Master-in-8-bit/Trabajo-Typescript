@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Administrar productos</title>
+    <link rel="stylesheet" href="../styles.css">
+    <link rel="stylesheet" href="../styles/adminIni.css">
+</head>
+<body hidden>
+    <!-- El panel se mantiene oculto hasta que JavaScript verifica que sea admin. -->
+    <header class="header">
+        <div class="logo">
+            <a href="../index.html"><img src="../src/Logo.png" alt="Inicio"></a>
+        </div>
+        <nav class="nav" aria-label="Navegación principal">
+            <div class="acciones">
+                <a class="ir-tienda" href="../index.html">Ver tienda</a>
+                <div class="menu">
+                    <button type="button" class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false">Menú ▾</button>
+                    <div class="menu-lista" id="menuLista">
+                        <a href="./adminIni.html" id="enlaceAdmin">Administrar productos</a>
+                        <a href="./cuenta.html">Mi cuenta</a>
+                        <a href="./historial.html">Historial</a>
+                        <a href="./acerca.html">Acerca de</a>
+                        <button class="salir-admin" id="cerrarSesionAdmin" type="button">Cerrar sesión</button>
+                    </div>
+                </div>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Formularios y catálogo que JavaScript permite agregar, editar y borrar. -->
+    <main class="admin-main">
+        <section class="admin-intro">
+            <div>
+                <p class="eyebrow">Panel de administración</p>
+                <h1>Administrar productos</h1>
+                <p>Agregá, editá o eliminá productos del catálogo de la tienda.</p>
+            </div>
+        </section>
+
+        <section class="form-panel" aria-labelledby="formTitulo">
+            <h2 id="formTitulo">Agregar producto</h2>
+            <form id="formProducto">
+                <input type="hidden" id="productoId">
+                <div class="campos-form">
+                    <div class="campo">
+                        <label for="nombre">Nombre</label>
+                        <input id="nombre" name="nombre" type="text" maxlength="120" required>
+                    </div>
+                    <div class="campo">
+                        <label for="categoriaProducto">Categoría</label>
+                        <input id="categoriaProducto" name="categoria" type="text" maxlength="50" required>
+                    </div>
+                    <div class="campo">
+                        <label for="precio">Precio regular</label>
+                        <input id="precio" name="precio" type="number" min="0.01" step="0.01" required>
+                    </div>
+                    <div class="campo">
+                        <label for="descuento">Descuento (%)</label>
+                        <input id="descuento" name="descuento" type="number" min="0" max="100" step="1" value="0" required>
+                    </div>
+                    <div class="campo campo-imagen">
+                        <label for="imagen">Imagen (URL o ruta, opcional)</label>
+                        <input id="imagen" name="imagen" type="text" maxlength="300" placeholder="./src/producto.jpg">
+                    </div>
+                </div>
+                <div class="acciones-form">
+                    <button class="boton-principal" id="guardarProducto" type="submit">Agregar producto</button>
+                    <button class="boton-secundario" id="cancelarEdicion" type="button" hidden>Cancelar edición</button>
+                </div>
+            </form>
+        </section>
+
+        <div class="lista-cabecera">
+            <div>
+                <h2>Catálogo</h2>
+                <p id="totalProductos">0 productos</p>
+            </div>
+            <div class="filtro">
+                <label for="categoria">Categoría</label>
+                <select id="categoria"></select>
+            </div>
+        </div>
+        <p id="mensajeAdmin" class="mensaje-admin" role="status" aria-live="polite"></p>
+        <section class="grilla" id="grillaAdmin" aria-label="Productos administrables"></section>
+    </main>
+
+    <script src="../js/adminIni.js"></script>
+    <script src="../js/menu.js"></script>
+</body>
+</html>

@@ -7,7 +7,21 @@
     <link rel="stylesheet" href="../styles/pago.css">
 </head>
 <body>
-    
+    <!-- Encabezado con la navegación disponible durante el pago. -->
+    <header>
+      <a class="logo-pago" href="../index.html"><img src="../src/Logo.png" alt="Inicio"></a>
+      <nav class="menu-pago" aria-label="Navegación principal">
+        <button type="button" class="menu-btn-pago" id="menuBtn" aria-haspopup="true" aria-expanded="false">Menú ▾</button>
+        <div class="menu-lista-pago" id="menuLista">
+          <a href="../html/adminIni.html" id="enlaceAdmin" hidden>Administrar productos</a>
+          <a href="../html/cuenta.html">Mi cuenta</a>
+          <a href="../html/historial.html">Historial</a>
+          <a href="../html/acerca.html">Acerca de</a>
+          <button type="button" id="cerrarSesion">Iniciar sesión</button>
+        </div>
+      </nav>
+    </header>
+      <!-- El formulario y el resumen se completan con el carrito de la cuenta. -->
       <main>
     <!-- Formulario de pago -->
     <section class="panel" id="seccionPago">
@@ -45,7 +59,8 @@
       <div id="items"></div>
       <div class="sep"></div>
       <div class="fila"><span>Subtotal</span><span id="subtotal">$0,00</span></div>
-      <div class="fila desc"><span>Descuentos</span><span id="descuentos">-$0,00</span></div>
+      <div class="fila desc"><span>Descuentos de productos</span><span id="descuentos">-$0,00</span></div>
+      <div class="fila desc" id="filaDescuentoEmpleado" hidden><span>Descuento empleado (10%)</span><span id="descuentoEmpleado">-$0,00</span></div>
       <div class="fila total"><span>Total</span><span id="total">$0,00</span></div>
     </aside>
  
@@ -63,5 +78,6 @@
 
 
   <script src="../js/pago.js"></script>
+  <script src="../js/menu.js"></script>
 </body>
 </html>

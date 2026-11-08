@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../styles/acerca.css">
 </head>
 <body>
+    <!-- Encabezado compartido: logo, acceso al carrito y menú de navegación. -->
     <header class="header">
         <div class="logo">
             <a href="../index.html"><img src="../src/Logo.png" alt="logo"></a>
@@ -18,10 +19,11 @@
                     <div class="menu">
                         <button type="button" class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false">Menú ▾</button>
                         <div class="menu-lista" id="menuLista">
+                            <a href="../html/adminIni.html" id="enlaceAdmin" hidden>Administrar productos</a>
                             <a href="../html/cuenta.html">Mi cuenta</a>
                             <a href="../html/historial.html">Historial</a>
                             <a href="../html/acerca.html">Acerca de</a>
-                            <button type="button" class="salir" id="cerrarSesion">Cerrar sesión</button>
+                            <button type="button" class="salir" id="cerrarSesion">Iniciar sesión</button>
                         </div>
                     </div>
                 </div>
@@ -29,8 +31,9 @@
         </nav>
     </header>
 
+    <!-- Contenido informativo de la tienda. -->
     <div class="hero">
-    <h2>Sobre Mi Tienda</h2>
+    <h2>Sobre Catalogo de Productos</h2>
     <p>Productos de todos los días, a buen precio y con entrega rápida. Comprá desde tu casa, sin vueltas.</p>
   </div>
  
@@ -87,9 +90,8 @@
   </main>
  
   <footer>© 2026 Catalogo de Productos. Todos los derechos reservados.</footer>
-
-
-
+    <!-- Scripts del menú, la sesión y la visibilidad del enlace de administración. -->
     <script src="../js/acerca.js"></script>
+    <script src="../js/menu.js"></script>
 </body>
 </html>

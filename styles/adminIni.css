@@ -1,0 +1,228 @@
+/* Distribución y componentes visuales propios del panel de administración. */
+.admin-main {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 32px 20px 48px;
+}
+
+.header .nav a.ir-tienda {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 600;
+  padding: 10px 16px;
+  border: 1px solid rgba(255,255,255,.75);
+  border-radius: 8px;
+}
+
+.header .nav a.ir-tienda:hover {
+  background: rgba(255,255,255,.16);
+}
+
+.salir-admin {
+  color: #fff;
+  font: inherit;
+  font-weight: 600;
+  padding: 10px 16px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,.75);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.salir-admin:hover {
+  background: rgba(255,255,255,.16);
+}
+
+.admin-intro {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.admin-intro h1 {
+  margin: 2px 0 6px;
+  font-size: clamp(1.7rem, 4vw, 2.2rem);
+}
+
+.admin-intro p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.admin-intro .eyebrow {
+  color: var(--red);
+  font-weight: 700;
+  font-size: .8rem;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.form-panel {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 22px;
+  margin-bottom: 32px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.06);
+}
+
+.form-panel h2, .lista-cabecera h2 {
+  margin: 0 0 16px;
+  font-size: 1.25rem;
+}
+
+.campos-form {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.campo label {
+  font-size: .9rem;
+  font-weight: 600;
+}
+
+.campo input {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--text);
+  font: inherit;
+}
+
+.campo input:focus-visible {
+  outline: 3px solid color-mix(in srgb, var(--red) 30%, transparent);
+  border-color: var(--red);
+}
+
+.campo-imagen {
+  grid-column: span 2;
+}
+
+.acciones-form {
+  display: flex;
+  gap: 10px;
+  margin-top: 18px;
+}
+
+.boton-principal, .boton-secundario, .acciones-producto button {
+  border: 0;
+  border-radius: 8px;
+  padding: 10px 16px;
+  font: inherit;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.boton-principal {
+  background: var(--red);
+  color: #fff;
+}
+
+.boton-principal:hover {
+  background: var(--red-dark);
+}
+
+.boton-secundario {
+  background: #ececf0;
+  color: var(--text);
+}
+
+.lista-cabecera {
+  display: flex;
+  justify-content: space-between;
+  align-items: end;
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.lista-cabecera h2 {
+  margin-bottom: 4px;
+}
+
+.lista-cabecera p {
+  margin: 0;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.lista-cabecera .filtro {
+  margin: 0;
+}
+
+.acciones-producto {
+  display: flex;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 8px;
+}
+
+.acciones-producto button {
+  flex: 1;
+  padding: 9px 10px;
+}
+
+.acciones-producto .editar {
+  background: #fff2eb;
+  color: var(--red-dark);
+}
+
+.acciones-producto .eliminar {
+  background: #fcebea;
+  color: #a3211b;
+}
+
+.mensaje-admin {
+  min-height: 1.3em;
+  margin: -4px 0 14px;
+  color: var(--muted);
+  font-size: .9rem;
+}
+
+.mensaje-admin.error {
+  color: #a3211b;
+}
+
+@media (max-width: 700px) {
+  .campos-form {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 480px) {
+  .admin-main {
+    padding: 24px 14px 36px;
+  }
+
+  .form-panel {
+    padding: 16px;
+  }
+
+  .campos-form {
+    grid-template-columns: 1fr;
+  }
+
+  .campo-imagen {
+    grid-column: auto;
+  }
+
+  .lista-cabecera {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .lista-cabecera .filtro,
+  .lista-cabecera select {
+    width: 100%;
+  }
+}

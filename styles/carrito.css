@@ -1,3 +1,4 @@
+/* Colores y reglas visuales del carrito de compras. */
 :root {
     --bg: #f4f4f6;
     --card: #fff;
@@ -9,6 +10,7 @@
     --line: #d9d9de;
   }
   * { box-sizing: border-box; }
+  [hidden] { display: none !important; }
   body {
     margin: 0;
     background: var(--bg);

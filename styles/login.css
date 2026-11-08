@@ -1,3 +1,4 @@
+/* Colores y estilos del formulario de inicio de sesión. */
 :root {
     --bg: #eef2f7;
     --card: #ffffff;
@@ -73,6 +74,20 @@
   button.submit:hover { background: var(--accent-dark); }
   button.submit:focus-visible, .toggle:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   button.submit:disabled { opacity: .6; cursor: wait; }
+  button.guest {
+    display: block;
+    margin: 14px auto 0;
+    padding: 7px 10px;
+    color: var(--muted);
+    background: transparent;
+    border: 1px solid var(--line);
+    border-radius: 7px;
+    font: inherit;
+    font-size: .82rem;
+    cursor: pointer;
+  }
+  button.guest:hover { color: var(--text); border-color: var(--muted); }
+  button.guest:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
   #mensaje { margin: 16px 0 0; text-align: center; font-size: .95rem; min-height: 1.2em; }
   #mensaje.ok { color: var(--ok); }
   #mensaje.fail { color: var(--error); }

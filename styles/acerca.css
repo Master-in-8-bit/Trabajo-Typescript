@@ -1,3 +1,4 @@
+/* Colores compartidos y presentación de la página informativa. */
 :root {
     --bg: #f4f4f6;
     --card: #fff;
@@ -117,6 +118,7 @@
   cursor: pointer;
   font-family: inherit;
 }
+[hidden] { display: none !important; }
 .menu-lista a:hover{ color: var(--bg);}
 .menu-lista a:hover, .menu-lista button:hover { background: var(--claro); }
 .menu-lista .salir { color: var(--red); font-weight: 600; border-top: 1px solid var(--line); border-radius: 0 0 6px 6px; margin-top: 4px; }
@@ -190,5 +192,3 @@ main { max-width: 1100px; margin: 0 auto; padding: 24px 20px 40px; }
   .contacto a:hover { text-decoration: underline; }
  
   footer { text-align: center; color: var(--muted); font-size: .9rem; padding: 0 20px 30px; }
-
-

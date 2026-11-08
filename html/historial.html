@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="../styles/historial.css">
 </head>
 <body>
+    <!-- Encabezado y menú de navegación del historial. -->
     <header class="header">
         <div class="logo">
             <a href="../index.html"><img src="../src/Logo.png" alt="logo"></a>
@@ -18,10 +19,11 @@
                     <div class="menu">
                         <button type="button" class="menu-btn" id="menuBtn" aria-haspopup="true" aria-expanded="false">Menú ▾</button>
                         <div class="menu-lista" id="menuLista">
+                            <a href="../html/adminIni.html" id="enlaceAdmin" hidden>Administrar productos</a>
                             <a href="../html/cuenta.html">Mi cuenta</a>
                             <a href="../html/historial.html">Historial</a>
                             <a href="../html/acerca.html">Acerca de</a>
-                            <button type="button" class="salir" id="cerrarSesion">Cerrar sesión</button>
+                            <button type="button" class="salir" id="cerrarSesion">Iniciar sesión</button>
                         </div>
                     </div>
                 </div>
@@ -29,6 +31,7 @@
         </nav>
     </header>
 
+    <!-- JavaScript carga las compras guardadas y muestra su detalle. -->
     <main>
     <!-- Lista de todas las ventas -->
     <section id="vistaLista"></section>
@@ -42,5 +45,6 @@
 
 
     <script src="../js/historial.js"></script>
+    <script src="../js/menu.js"></script>
 </body>
 </html>
