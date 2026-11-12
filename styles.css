@@ -245,6 +245,13 @@ main { max-width: 1100px; margin: 0 auto; padding: 24px 20px 40px; }
   }
   .foto img { max-height: 140px; max-width: 100%; object-fit: contain; }
   .nombre { font-size: 1.05rem; font-weight: 600; margin: 4px 0 10px; min-height: 2.6em; }
+  .categoria-admin {
+    margin: 0 0 8px;
+    color: var(--muted);
+    font-size: .78rem;
+    text-transform: uppercase;
+    letter-spacing: .04em;
+  }
   .etiqueta {
     display: inline-block;
     border: 1px solid var(--red);
@@ -257,6 +264,23 @@ main { max-width: 1100px; margin: 0 auto; padding: 24px 20px 40px; }
   .precio { font-size: 1.3rem; margin: 2px 0 10px; }
   .regular { font-size: .78rem; color: var(--muted); margin: 0 0 14px; }
   .descuento-empleado { color: var(--red-dark); font-weight: 600; }
+  .agregar-carrito {
+    margin-top: auto;
+    width: 100%;
+    padding: 10px 16px;
+    border: 0;
+    border-radius: 8px;
+    background: #fff2eb;
+    color: var(--red-dark);
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+  }
+  .agregar-carrito:hover {
+    background: #ffe0cf;
+    color: var(--red-dark);
+  }
 
   .cantidad {
     display: flex;

@@ -1,0 +1,27 @@
+# Dependencias
+node_modules/
+
+# Build / compilación
+/dist/
+
+# Base de datos local
+/data/
+*.sqlite
+*.sqlite3
+
+# Logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Sistema operativo
+.DS_Store
+Thumbs.db
+
+# Editor / entorno
+.vscode/
+.idea/
+
+# Archivos temporales
+*.tmp
+*.temp

@@ -1,18 +1,45 @@
 "use strict";
 (() => {
+    const leerSesion = () => {
+        try {
+            const raw = localStorage.getItem("usuarioSesion");
+            if (raw) {
+                const data = JSON.parse(raw);
+                if (data && typeof data.email === "string" && data.email.trim()) {
+                    return {
+                        email: data.email.trim().toLowerCase(),
+                        role: typeof data.role === "string" ? data.role : "cliente"
+                    };
+                }
+            }
+        }
+        catch (error) {
+            console.warn("No se pudo leer la sesión actual.", error);
+        }
+        const params = new URLSearchParams(window.location.search);
+        const email = params.get("email");
+        const role = params.get("role");
+        if (!email || !email.trim())
+            return null;
+        const sesion = {
+            email: email.trim().toLowerCase(),
+            role: role || "cliente"
+        };
+        try {
+            localStorage.setItem("usuarioSesion", JSON.stringify(sesion));
+        }
+        catch (error) {
+            console.warn("No se pudo restaurar la sesión.", error);
+        }
+        return sesion;
+    };
     // Formatea importes en pesos argentinos con dos decimales.
     const fmt = (n) => "$" + n.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-    // Leemos el correo activo para aplicar beneficios y separar el carrito de cada cuenta.
-    let correoSesion = "";
-    try {
-        correoSesion = sessionStorage.getItem("usuarioSesion") || "";
-    }
-    catch (error) {
-        console.error("No se pudo verificar el descuento de empleado.", error);
-    }
-    const descuentoEmpleado = correoSesion.toLowerCase().endsWith("@admin.com") ? 0.10 : 0;
+    const sesion = leerSesion();
+    const correoSesion = sesion?.email || "";
+    const descuentoEmpleado = correoSesion.endsWith("@admin.com") ? 0.10 : 0;
     // Cada cuenta tiene su propia clave de almacenamiento para no mezclar carritos.
-    const carritoKey = correoSesion ? `carrito:${encodeURIComponent(correoSesion.toLowerCase())}` : null;
+    const carritoKey = correoSesion ? `carrito:${encodeURIComponent(correoSesion)}` : "carrito:invitado";
     // El descuento del producto se aplica primero; luego se calcula el precio final.
     const precioBase = (p) => p.regular * (1 - p.dto / 100);
     const precioFinal = (p) => precioBase(p) * (1 - descuentoEmpleado);
@@ -21,45 +48,16 @@
         "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
     };
     const escapar = (texto) => String(texto).replace(/[&<>"']/g, caracter => entidades[caracter]);
-    // Conectar los controles del menú si están presentes en esta página.
-    const menuBtn = document.querySelector("#menuBtn");
-    const menuLista = document.querySelector("#menuLista");
-    if (menuBtn && menuLista) {
-        // Permite abrir/cerrar el menú, y cerrarlo con clic afuera o Escape.
-        const cerrarMenu = () => {
-            menuLista.classList.remove("abierto");
-            menuBtn.setAttribute("aria-expanded", "false");
-        };
-        menuBtn.addEventListener("click", e => {
-            e.stopPropagation();
-            const abierto = menuLista.classList.toggle("abierto");
-            menuBtn.setAttribute("aria-expanded", String(abierto));
-        });
-        document.addEventListener("click", cerrarMenu);
-        document.addEventListener("keydown", e => { if (e.key === "Escape")
-            cerrarMenu(); });
-    }
     // Muestra el texto correcto y permite cerrar la sesión.
     const btnSalir = document.querySelector("#cerrarSesion");
     if (btnSalir) {
-        let sesionActiva = false;
-        try {
-            sesionActiva = Boolean(sessionStorage.getItem("usuarioSesion"));
-        }
-        catch (error) {
-            console.error("No se pudo verificar la sesión.", error);
-        }
+        const sesionActiva = Boolean(sesion && sesion.email);
         btnSalir.textContent = sesionActiva ? "Cerrar sesión" : "Iniciar sesión";
         btnSalir.addEventListener("click", () => {
-            if (sesionActiva) {
-                try {
-                    sessionStorage.removeItem("usuarioSesion");
-                }
-                catch (error) {
-                    console.error("No se pudo cerrar la sesión.", error);
-                }
-            }
-            window.location.href = "../html/login.html";
+            if (sesionActiva)
+                localStorage.removeItem("usuarioSesion");
+            const loginUrl = window.location.pathname.includes("/html/") ? "login.html" : "./html/login.html";
+            window.location.href = new URL(loginUrl, window.location.href).toString();
         });
     }
     /* FIN HEADER */
@@ -117,25 +115,34 @@
             lista.innerHTML = '<p class="vacio">Tu carrito está vacío.<br><a href="../index.html">Ir a ver productos</a></p>';
             return;
         }
-        lista.innerHTML = items.map(p => `
-    <div class="item">
-      <div class="foto">${p.img ? `<img src="${escapar(p.img)}" alt="${escapar(p.nombre)}">` : escapar(p.emoji || "")}</div>
-      <div>
-        <p class="nombre">${escapar(p.nombre)}</p>
-        <p class="detalle">
-          ${fmt(precioFinal(p))} c/u
-          ${p.dto ? `<span class="dto">(${p.dto}% DTO)</span>` : ""}
-          ${descuentoEmpleado ? `<span class="dto"> + 10% descuento empleado</span>` : ""}
-        </p>
-        <div class="controles">
-          <button type="button" class="cant" data-accion="menos" data-id="${p.id}" aria-label="Quitar uno">−</button>
-          <span class="num">${p.cantidad}</span>
-          <button type="button" class="cant" data-accion="mas" data-id="${p.id}" aria-label="Agregar uno">+</button>
-          <button type="button" class="quitar" data-accion="quitar" data-id="${p.id}">Quitar</button>
+        lista.innerHTML = items.map(p => {
+            const precioUnitario = precioFinal(p);
+            const totalItem = p.cantidad * precioUnitario;
+            return `
+      <article class="item">
+        <div class="foto">${p.img ? `<img src="${escapar(p.img)}" alt="${escapar(p.nombre)}">` : escapar(p.emoji || "")}</div>
+
+        <div class="item-info">
+          <div class="item-header">
+            <p class="nombre">${escapar(p.nombre)}</p>
+            <div class="sub-item">${fmt(totalItem)}</div>
+          </div>
+
+          <div class="item-meta">
+            <span>${fmt(precioUnitario)} c/u</span>
+            ${p.dto ? `<span class="dto">(${p.dto}% DTO)</span>` : ""}
+            ${descuentoEmpleado ? `<span class="dto">+ 10% empleado</span>` : ""}
+          </div>
+
+          <div class="controles">
+            <button type="button" class="cant" data-accion="menos" data-id="${p.id}" aria-label="Quitar uno">−</button>
+            <span class="num">${p.cantidad}</span>
+            <button type="button" class="cant" data-accion="mas" data-id="${p.id}" aria-label="Agregar uno">+</button>
+            <button type="button" class="quitar" data-accion="quitar" data-id="${p.id}">Quitar</button>
+          </div>
         </div>
-      </div>
-      <div class="sub-item">${fmt(p.cantidad * precioFinal(p))}</div>
-    </div>`).join("");
+      </article>`;
+        }).join("");
     };
     // Un solo listener atiende los botones de todos los productos (evento delegado).
     lista.addEventListener("click", e => {
@@ -167,21 +174,14 @@
         }
     });
     btnPagar.addEventListener("click", () => {
-        // No se puede iniciar una compra si no hay una cuenta activa.
-        let sesionActiva = false;
-        try {
-            sesionActiva = Boolean(sessionStorage.getItem("usuarioSesion"));
-        }
-        catch (error) {
-            console.error("No se pudo verificar la sesión.", error);
-        }
+        const sesionActiva = Boolean(sesion && sesion.email);
         if (!sesionActiva) {
             window.alert("No iniciaste sesión. Iniciá sesión para realizar una compra.");
             window.location.href = "../html/login.html";
             return;
         }
-        // Con sesión activa se abre el formulario para completar el pago.
-        window.location.href = "pago.html";
+        const rolePago = sesion?.role || "cliente";
+        window.location.href = `pago.html?email=${encodeURIComponent(correoSesion)}&role=${encodeURIComponent(rolePago)}`;
     });
     // Dibuja la vista inicial usando el carrito leído del almacenamiento.
     dibujar();

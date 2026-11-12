@@ -3,83 +3,59 @@ interface Usuario {
   email: string;
   nombre?: string;
   apellido?: string;
-  password: string;
+  password?: string;
+  role?: string;
 }
 
-const menuBtn = document.getElementById("menuBtn");
-const menuLista = document.getElementById("menuLista");
+(() => {
+const leerSesion = (): { email: string; role: string } | null => {
+  try {
+    const raw = localStorage.getItem("usuarioSesion");
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (data && typeof data.email === "string" && data.email.trim()) {
+        return {
+          email: data.email.trim().toLowerCase(),
+          role: typeof data.role === "string" ? data.role : "cliente"
+        };
+      }
+    }
+  } catch (error) {
+    console.warn("No se pudo leer la sesión del usuario.", error);
+  }
 
-function cerrarMenu(): void {
-  if (!menuLista || !menuBtn) return;
+  const params = new URLSearchParams(window.location.search);
+  const email = params.get("email");
+  const role = params.get("role");
+  if (!email || !email.trim()) return null;
 
-  menuLista.classList.remove("abierto");
-  menuBtn.setAttribute("aria-expanded", "false");
-}
+  const sesion = {
+    email: email.trim().toLowerCase(),
+    role: role || "cliente"
+  };
 
-if (menuBtn && menuLista) {
-  menuBtn.addEventListener("click", (e: MouseEvent) => {
-    e.stopPropagation();
+  try { localStorage.setItem("usuarioSesion", JSON.stringify(sesion)); } catch (error) {
+    console.warn("No se pudo guardar la sesión del usuario.", error);
+  }
 
-    const abierto = menuLista.classList.toggle("abierto");
-    menuBtn.setAttribute("aria-expanded", String(abierto));
-  });
-
-  document.addEventListener("click", cerrarMenu);
-
-  document.addEventListener("keydown", (e: KeyboardEvent) => {
-    if (e.key === "Escape") cerrarMenu();
-  });
-}
+  return sesion;
+};
 
 const botonSesion = document.getElementById("cerrarSesion");
-let sesionActiva = false;
-
-try {
-  sesionActiva = Boolean(sessionStorage.getItem("usuarioSesion"));
-} catch (error) {
-  console.error("No se pudo verificar la sesión.", error);
-}
+const sesionActual = leerSesion();
+const sessionEmail = sesionActual?.email || "";
+const sesionActiva = Boolean(sessionEmail);
 
 if (botonSesion) {
   botonSesion.textContent = sesionActiva ? "Cerrar sesión" : "Iniciar sesión";
 
   botonSesion.addEventListener("click", () => {
-    if (sesionActiva) {
-      try {
-        sessionStorage.removeItem("usuarioSesion");
-      } catch (error) {
-        console.error("No se pudo cerrar la sesión.", error);
-      }
-    }
-
+    if (sessionEmail) localStorage.removeItem("usuarioSesion");
     window.location.href = "../html/login.html";
   });
 }
 
 let usuario: Usuario | null = null;
-
-try {
-  const correoSesion = (sessionStorage.getItem("usuarioSesion") || "").toLowerCase();
-  const usuarios = JSON.parse(
-    localStorage.getItem("usuarios") || "[]"
-  ) as Usuario[];
-
-  usuario = usuarios.find(
-    (item: Usuario) => item.email.toLowerCase() === correoSesion
-  ) || null;
-
-  if (!usuario && correoSesion) {
-    const usuarioAnterior = JSON.parse(
-      localStorage.getItem("usuario") || "null"
-    ) as Usuario | null;
-
-    if (usuarioAnterior && usuarioAnterior.email.toLowerCase() === correoSesion) {
-      usuario = usuarioAnterior;
-    }
-  }
-} catch (error) {
-  console.error("No se pudieron cargar los datos de la cuenta activa.", error);
-}
 
 const sinDatos = document.getElementById("sinDatos");
 const conDatos = document.getElementById("conDatos");
@@ -89,33 +65,33 @@ const correo = document.getElementById("correo");
 const clave = document.getElementById("clave");
 const btnVer = document.getElementById("btnVer");
 
-if (
-  usuario &&
-  usuario.nombre &&
-  sinDatos &&
-  conDatos &&
-  saludo &&
-  nombreCompleto &&
-  correo
-) {
+function renderCuenta(): void {
+  if (
+    !usuario ||
+    !usuario.nombre ||
+    !sinDatos ||
+    !conDatos ||
+    !saludo ||
+    !nombreCompleto ||
+    !correo
+  ) {
+    return;
+  }
+
   sinDatos.hidden = true;
   conDatos.hidden = false;
 
   saludo.textContent = "Hola, " + usuario.nombre + "!";
-  nombreCompleto.textContent =
-    usuario.nombre + " " + (usuario.apellido || "");
+  nombreCompleto.textContent = usuario.nombre + " " + (usuario.apellido || "");
   correo.textContent = usuario.email;
 
   let visible = false;
 
-  if (clave && btnVer) {
+  if (clave && btnVer && usuario.password) {
     const password = usuario.password;
 
     const pintarClave = (): void => {
-      clave.textContent = visible
-        ? password
-        : "•".repeat(password.length);
-
+      clave.textContent = visible ? password : "•".repeat(password.length);
       btnVer.textContent = visible ? "Ocultar" : "Mostrar";
     };
 
@@ -127,3 +103,26 @@ if (
     pintarClave();
   }
 }
+
+async function cargarUsuarioDesdeBase(): Promise<void> {
+  const correoSesion = (sesionActual?.email || "").trim();
+  if (!correoSesion) return;
+
+  try {
+    const respuesta = await fetch(`/api/usuario/${encodeURIComponent(correoSesion)}`);
+    const data = await respuesta.json();
+
+    if (!respuesta.ok || !data.ok || !data.usuario) {
+      throw new Error(data.mensaje || "No se pudo cargar el perfil actual.");
+    }
+
+    usuario = data.usuario as Usuario;
+    renderCuenta();
+  } catch (error) {
+    console.error("No se pudieron cargar los datos del usuario desde SQLite.", error);
+    usuario = null;
+  }
+}
+
+void cargarUsuarioDesdeBase();
+})();

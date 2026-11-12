@@ -10,18 +10,48 @@
     emoji?: string;
   }
 
+const leerSesion = (): { email: string; role: string } | null => {
+  try {
+    const raw = localStorage.getItem("usuarioSesion");
+    if (raw) {
+      const data = JSON.parse(raw);
+      if (data && typeof data.email === "string" && data.email.trim()) {
+        return {
+          email: data.email.trim().toLowerCase(),
+          role: typeof data.role === "string" ? data.role : "cliente"
+        };
+      }
+    }
+  } catch (error) {
+    console.warn("No se pudo leer la sesión actual.", error);
+  }
+
+  const params = new URLSearchParams(window.location.search);
+  const email = params.get("email");
+  const role = params.get("role");
+  if (!email || !email.trim()) return null;
+
+  const sesion = {
+    email: email.trim().toLowerCase(),
+    role: role || "cliente"
+  };
+
+  try {
+    localStorage.setItem("usuarioSesion", JSON.stringify(sesion));
+  } catch (error) {
+    console.warn("No se pudo restaurar la sesión.", error);
+  }
+
+  return sesion;
+};
+
 // Formatea importes en pesos argentinos con dos decimales.
 const fmt = (n: number): string => "$" + n.toLocaleString("es-AR", { minimumFractionDigits: 2, maximumFractionDigits: 2 });
-// Leemos el correo activo para aplicar beneficios y separar el carrito de cada cuenta.
-let correoSesion = "";
-try {
-  correoSesion = sessionStorage.getItem("usuarioSesion") || "";
-} catch (error) {
-  console.error("No se pudo verificar el descuento de empleado.", error);
-}
-const descuentoEmpleado = correoSesion.toLowerCase().endsWith("@admin.com") ? 0.10 : 0;
+const sesion = leerSesion();
+const correoSesion = sesion?.email || "";
+const descuentoEmpleado = correoSesion.endsWith("@admin.com") ? 0.10 : 0;
 // Cada cuenta tiene su propia clave de almacenamiento para no mezclar carritos.
-const carritoKey = correoSesion ? `carrito:${encodeURIComponent(correoSesion.toLowerCase())}` : null;
+const carritoKey = correoSesion ? `carrito:${encodeURIComponent(correoSesion)}` : "carrito:invitado";
 // El descuento del producto se aplica primero; luego se calcula el precio final.
 const precioBase = (p: ProductoCarrito): number => p.regular * (1 - p.dto / 100);
 const precioFinal = (p: ProductoCarrito): number => precioBase(p) * (1 - descuentoEmpleado);
@@ -31,40 +61,15 @@ const entidades: Record<string, string> = {
 };
 const escapar = (texto: unknown): string => String(texto).replace(/[&<>"']/g, caracter => entidades[caracter]);
 
-// Conectar los controles del menú si están presentes en esta página.
-const menuBtn = document.querySelector<HTMLButtonElement>("#menuBtn");
-const menuLista = document.querySelector<HTMLElement>("#menuLista");
-if (menuBtn && menuLista) {
-  // Permite abrir/cerrar el menú, y cerrarlo con clic afuera o Escape.
-  const cerrarMenu = () => {
-    menuLista.classList.remove("abierto");
-    menuBtn.setAttribute("aria-expanded", "false");
-  };
-  menuBtn.addEventListener("click", e => {
-    e.stopPropagation();
-    const abierto = menuLista.classList.toggle("abierto");
-    menuBtn.setAttribute("aria-expanded", String(abierto));
-  });
-  document.addEventListener("click", cerrarMenu);
-  document.addEventListener("keydown", e => { if (e.key === "Escape") cerrarMenu(); });
-}
 // Muestra el texto correcto y permite cerrar la sesión.
 const btnSalir = document.querySelector<HTMLButtonElement>("#cerrarSesion");
 if (btnSalir) {
-  let sesionActiva = false;
-  try {
-    sesionActiva = Boolean(sessionStorage.getItem("usuarioSesion"));
-  } catch (error) {
-    console.error("No se pudo verificar la sesión.", error);
-  }
+  const sesionActiva = Boolean(sesion && sesion.email);
   btnSalir.textContent = sesionActiva ? "Cerrar sesión" : "Iniciar sesión";
   btnSalir.addEventListener("click", () => {
-    if (sesionActiva) {
-      try { sessionStorage.removeItem("usuarioSesion"); } catch (error) {
-        console.error("No se pudo cerrar la sesión.", error);
-      }
-    }
-    window.location.href = "../html/login.html";
+    if (sesionActiva) localStorage.removeItem("usuarioSesion");
+    const loginUrl = window.location.pathname.includes("/html/") ? "login.html" : "./html/login.html";
+    window.location.href = new URL(loginUrl, window.location.href).toString();
   });
 }
 
@@ -172,20 +177,14 @@ btnVaciar.addEventListener("click", () => {
 });
 
 btnPagar.addEventListener("click", () => {
-  // No se puede iniciar una compra si no hay una cuenta activa.
-  let sesionActiva = false;
-  try {
-    sesionActiva = Boolean(sessionStorage.getItem("usuarioSesion"));
-  } catch (error) {
-    console.error("No se pudo verificar la sesión.", error);
-  }
+  const sesionActiva = Boolean(sesion && sesion.email);
   if (!sesionActiva) {
     window.alert("No iniciaste sesión. Iniciá sesión para realizar una compra.");
     window.location.href = "../html/login.html";
     return;
   }
-  // Con sesión activa se abre el formulario para completar el pago.
-  window.location.href = "pago.html";
+  const rolePago = sesion?.role || "cliente";
+  window.location.href = `pago.html?email=${encodeURIComponent(correoSesion)}&role=${encodeURIComponent(rolePago)}`;
 });
 
 // Dibuja la vista inicial usando el carrito leído del almacenamiento.

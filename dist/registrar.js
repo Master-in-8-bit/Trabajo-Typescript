@@ -15,24 +15,11 @@ const errores = {
     email: document.getElementById("emailError"),
     password: document.getElementById("passError")
 };
-const USUARIOS_KEY = "usuarios";
 if (form && mensaje && btn && toggle &&
     campos.nombre && campos.apellido &&
     campos.email && campos.password &&
     errores.nombre && errores.apellido &&
     errores.email && errores.password) {
-    const cargarUsuarios = () => {
-        const guardados = localStorage.getItem(USUARIOS_KEY);
-        if (guardados !== null) {
-            const usuarios = JSON.parse(guardados);
-            if (!Array.isArray(usuarios)) {
-                throw new Error("La lista de usuarios no es válida.");
-            }
-            return usuarios;
-        }
-        const anterior = localStorage.getItem("usuario");
-        return anterior ? [JSON.parse(anterior)] : [];
-    };
     const setError = (campo, texto) => {
         errores[campo].textContent = texto;
         campos[campo].classList.add("invalid");
@@ -60,6 +47,10 @@ if (form && mensaje && btn && toggle &&
             setError("email", "El correo no es válido.");
             ok = false;
         }
+        else if (mail.toLowerCase().endsWith("@admin.com")) {
+            setError("email", "No se pueden crear administradores desde la página de registro.");
+            ok = false;
+        }
         if (!campos.password.value) {
             setError("password", "Creá una contraseña.");
             ok = false;
@@ -75,7 +66,7 @@ if (form && mensaje && btn && toggle &&
         campos.password.type = oculto ? "text" : "password";
         toggle.textContent = oculto ? "Ocultar" : "Mostrar";
     });
-    form.addEventListener("submit", (e) => {
+    form.addEventListener("submit", async (e) => {
         e.preventDefault();
         mensaje.className = "";
         mensaje.textContent = "";
@@ -90,29 +81,34 @@ if (form && mensaje && btn && toggle &&
             password: campos.password.value
         };
         try {
-            const usuarios = cargarUsuarios();
-            if (usuarios.some(usuario => usuario.email.toLowerCase() === datos.email)) {
-                setError("email", "Ya existe una cuenta con ese correo.");
-                btn.disabled = false;
-                btn.textContent = "Crear cuenta";
-                return;
+            const respuesta = await fetch('/api/clientes', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(datos)
+            });
+            const data = await respuesta.json();
+            if (!respuesta.ok) {
+                throw new Error(data.mensaje || 'No se pudo guardar la cuenta.');
             }
-            usuarios.push(datos);
-            localStorage.setItem(USUARIOS_KEY, JSON.stringify(usuarios));
+            mensaje.className = 'ok';
+            mensaje.textContent = '¡Cuenta creada! Redirigiendo al inicio de sesión...';
+            setTimeout(() => {
+                window.location.href = 'login.html';
+            }, 1000);
         }
         catch (error) {
-            console.error("No se pudo guardar la cuenta.", error);
-            mensaje.className = "fail";
-            mensaje.textContent = "No se pudo guardar la cuenta en este navegador.";
+            console.error('No se pudo guardar la cuenta.', error);
+            const mensajeError = error instanceof Error ? error.message : 'No se pudo guardar la cuenta.';
+            if (mensajeError.toLowerCase().includes('correo')) {
+                setError('email', mensajeError);
+            }
+            else {
+                mensaje.className = 'fail';
+                mensaje.textContent = mensajeError;
+            }
             btn.disabled = false;
-            btn.textContent = "Crear cuenta";
-            return;
+            btn.textContent = 'Crear cuenta';
         }
-        mensaje.className = "ok";
-        mensaje.textContent = "¡Cuenta creada! Redirigiendo al inicio de sesión...";
-        setTimeout(() => {
-            window.location.href = "login.html";
-        }, 1000);
     });
     for (const c of Object.keys(campos)) {
         campos[c].addEventListener("input", () => {

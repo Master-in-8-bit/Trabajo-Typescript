@@ -10,8 +10,13 @@
   "license": "ISC",
   "description": "",
   "devDependencies": {
+    "playwright": "^1.65.0",
     "typescript": "^5.9.3",
     "typescriptnpm": "^1.0.1",
     "uninstall": "^0.0.0"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.11.1",
+    "express": "^5.3.0"
   }
 }

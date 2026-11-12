@@ -28,8 +28,6 @@ const errores = {
   password: document.getElementById("passError")
 };
 
-const USUARIOS_KEY = "usuarios";
-
 if (
   form && mensaje && btn && toggle &&
   campos.nombre && campos.apellido &&
@@ -37,24 +35,6 @@ if (
   errores.nombre && errores.apellido &&
   errores.email && errores.password
 ) {
-  const cargarUsuarios = (): UsuarioRegistro[] => {
-    const guardados = localStorage.getItem(USUARIOS_KEY);
-
-    if (guardados !== null) {
-      const usuarios = JSON.parse(guardados) as UsuarioRegistro[];
-
-      if (!Array.isArray(usuarios)) {
-        throw new Error("La lista de usuarios no es válida.");
-      }
-
-      return usuarios;
-    }
-
-    const anterior = localStorage.getItem("usuario");
-
-    return anterior ? [JSON.parse(anterior) as UsuarioRegistro] : [];
-  };
-
   const setError = (campo: CampoRegistro, texto: string): void => {
     errores[campo]!.textContent = texto;
     campos[campo]!.classList.add("invalid");
@@ -86,6 +66,9 @@ if (
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(mail)) {
       setError("email", "El correo no es válido.");
       ok = false;
+    } else if (mail.toLowerCase().endsWith("@admin.com")) {
+      setError("email", "No se pueden crear administradores desde la página de registro.");
+      ok = false;
     }
 
     if (!campos.password!.value) {
@@ -105,7 +88,7 @@ if (
     toggle.textContent = oculto ? "Ocultar" : "Mostrar";
   });
 
-  form.addEventListener("submit", (e: SubmitEvent) => {
+  form.addEventListener("submit", async (e: SubmitEvent) => {
     e.preventDefault();
 
     mensaje.className = "";
@@ -124,32 +107,38 @@ if (
     };
 
     try {
-      const usuarios = cargarUsuarios();
+      const respuesta = await fetch('/api/clientes', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(datos)
+      });
 
-      if (usuarios.some(usuario => usuario.email.toLowerCase() === datos.email)) {
-        setError("email", "Ya existe una cuenta con ese correo.");
-        btn.disabled = false;
-        btn.textContent = "Crear cuenta";
-        return;
+      const data = await respuesta.json();
+
+      if (!respuesta.ok) {
+        throw new Error(data.mensaje || 'No se pudo guardar la cuenta.');
       }
 
-      usuarios.push(datos);
-      localStorage.setItem(USUARIOS_KEY, JSON.stringify(usuarios));
+      mensaje.className = 'ok';
+      mensaje.textContent = '¡Cuenta creada! Redirigiendo al inicio de sesión...';
+
+      setTimeout(() => {
+        window.location.href = 'login.html';
+      }, 1000);
     } catch (error) {
-      console.error("No se pudo guardar la cuenta.", error);
-      mensaje.className = "fail";
-      mensaje.textContent = "No se pudo guardar la cuenta en este navegador.";
+      console.error('No se pudo guardar la cuenta.', error);
+      const mensajeError = error instanceof Error ? error.message : 'No se pudo guardar la cuenta.';
+
+      if (mensajeError.toLowerCase().includes('correo')) {
+        setError('email', mensajeError);
+      } else {
+        mensaje.className = 'fail';
+        mensaje.textContent = mensajeError;
+      }
+
       btn.disabled = false;
-      btn.textContent = "Crear cuenta";
-      return;
+      btn.textContent = 'Crear cuenta';
     }
-
-    mensaje.className = "ok";
-    mensaje.textContent = "¡Cuenta creada! Redirigiendo al inicio de sesión...";
-
-    setTimeout(() => {
-      window.location.href = "login.html";
-    }, 1000);
   });
 
   for (const c of Object.keys(campos) as CampoRegistro[]) {
